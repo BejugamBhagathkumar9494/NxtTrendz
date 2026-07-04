@@ -1,0 +1,23 @@
+# Dependency directories
+node_modules/
+/node_modules
+/*/node_modules
+
+# Production build
+build/
+/build
+
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+
+# Logs and system files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db

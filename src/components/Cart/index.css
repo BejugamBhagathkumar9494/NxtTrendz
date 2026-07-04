@@ -1,0 +1,249 @@
+.cart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 80vh;
+  padding: 24px;
+}
+
+.empty-cart-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.cart-img {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 24px;
+}
+
+.empty-cart-heading {
+  color: #171f46;
+  font-family: 'Roboto';
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.cart-content-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1110px;
+}
+
+.cart-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #cbced2;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.cart-my-cart-heading {
+  color: #171f46;
+  font-family: 'Roboto';
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0px;
+}
+
+.remove-all-btn {
+  background-color: transparent;
+  border: none;
+  color: #3b82f6;
+  font-family: 'Roboto';
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+
+.cart-list {
+  padding-left: 0px;
+  margin: 0px;
+  list-style-type: none;
+}
+
+.cart-item-container {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0px 4px 16px rgba(7, 7, 7, 0.05);
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.cart-item-details-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+@media screen and (min-width: 768px) {
+  .cart-item-details-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.cart-item-title-brand-container {
+  margin-bottom: 12px;
+}
+
+@media screen and (min-width: 768px) {
+  .cart-item-title-brand-container {
+    margin-bottom: 0px;
+    width: 30%;
+  }
+}
+
+.cart-item-title {
+  color: #171f46;
+  font-family: 'Roboto';
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0px 0px 4px 0px;
+}
+
+.cart-item-brand {
+  color: #616e7c;
+  font-family: 'Roboto';
+  font-size: 12px;
+  margin: 0px;
+}
+
+.cart-item-quantity-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+@media screen and (min-width: 768px) {
+  .cart-item-quantity-container {
+    margin-bottom: 0px;
+  }
+}
+
+.quantity-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.quantity-icon {
+  font-size: 20px;
+  color: #616e7c;
+}
+
+.cart-item-quantity {
+  color: #171f46;
+  font-family: 'Roboto';
+  font-size: 16px;
+  font-weight: 500;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.cart-item-price-remove-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media screen and (min-width: 768px) {
+  .cart-item-price-remove-container {
+    width: 25%;
+  }
+}
+
+.cart-item-total-price {
+  color: #171f46;
+  font-family: 'Roboto';
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0px;
+}
+
+.remove-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.remove-icon {
+  font-size: 24px;
+  color: #ff0b37;
+}
+
+.cart-summary-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 32px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 16px rgba(7, 7, 7, 0.05);
+}
+
+.order-total-heading {
+  color: #475569;
+  font-family: 'Roboto';
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+
+.order-total-price {
+  color: #171f46;
+  font-size: 24px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.items-count-text {
+  color: #616e7c;
+  font-family: 'Roboto';
+  font-size: 14px;
+  margin-top: 0px;
+  margin-bottom: 16px;
+}
+
+.checkout-btn {
+  color: #ffffff;
+  background-color: #0b69ff;
+  font-family: 'Roboto';
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 32px;
+  cursor: pointer;
+  outline: none;
+}
