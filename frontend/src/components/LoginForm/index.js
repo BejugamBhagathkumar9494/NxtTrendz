@@ -208,38 +208,6 @@ class LoginForm extends Component {
 
           {showSubmitError && <p className="error-message">*{errorMsg}</p>}
           {successMsg && <p className="success-message">{successMsg}</p>}
-
-          {!isSignUp && (
-            <div className="demo-credentials-container">
-              <p className="demo-credentials-heading">Quick Login for Recruiters</p>
-              <div className="demo-btn-group">
-                <button
-                  type="button"
-                  className="demo-credential-btn admin-btn"
-                  onClick={() => this.fillCredentials('admin', 'admin123')}
-                >
-                  <span className="demo-role admin-role">Admin (Local Bypass)</span>
-                  <span className="demo-username">admin | admin123</span>
-                </button>
-                <button
-                  type="button"
-                  className="demo-credential-btn"
-                  onClick={() => this.fillCredentials('rahul', 'rahul@2021')}
-                >
-                  <span className="demo-role">Prime User</span>
-                  <span className="demo-username">rahul | rahul@2021</span>
-                </button>
-                <button
-                  type="button"
-                  className="demo-credential-btn"
-                  onClick={() => this.fillCredentials('raja', 'raja@2021')}
-                >
-                  <span className="demo-role">Non-Prime User</span>
-                  <span className="demo-username">raja | raja@2021</span>
-                </button>
-              </div>
-            </div>
-          )}
         </form>
       </div>
     )

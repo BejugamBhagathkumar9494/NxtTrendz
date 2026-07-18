@@ -8,6 +8,22 @@ https://nxt-trendz-kohl-five.vercel.app/
 
 ---
 
+## 🔐 Demo Credentials
+
+Use the following credentials to log in and test the application features:
+
+- **Admin Account (Local Bypass)**:
+  - Username: `admin`
+  - Password: `admin123`
+- **Prime User Account**:
+  - Username: `rahul`
+  - Password: `rahul@2021`
+- **Non-Prime User Account**:
+  - Username: `raja`
+  - Password: `raja@2021`
+
+---
+
 ## ✨ Features
 
 * 🔐 Secure User Authentication (JWT)
