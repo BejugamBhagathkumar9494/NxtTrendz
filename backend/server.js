@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
@@ -17,34 +16,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Initialize Supabase Client if credentials are provided
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-let supabase = null;
-let supabaseAdmin = null;
-let isSupabaseConfigured = false;
-
-if (supabaseUrl && supabaseKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && supabaseKey !== 'YOUR_SUPABASE_KEY') {
-  try {
-    supabase = createClient(supabaseUrl, supabaseKey);
-    supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-    isSupabaseConfigured = true;
-    console.log('✅ Supabase connected successfully.');
-  } catch (error) {
-    console.error('❌ Failed to initialize Supabase client:', error.message);
-  }
-} else {
-  console.log('⚠️ Supabase credentials not found or placeholder values used. Running in LOCAL FALLBACK mode.');
-  console.log('💡 In fallback mode, use the following credentials to login:');
-  console.log('   Username: rahul | Password: rahul@2021');
-  console.log('   Username: raja  | Password: raja@2021');
-}
+console.log('💡 Running with local JWT authentication.');
+console.log('💡 Valid credentials:');
+console.log('   Username: admin | Password: admin123 (Local Bypass)');
+console.log('   Any valid CCBP credentials (verified via proxy).');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'nxttrenz_local_secret_key_12345';
 let cachedCcbpToken = null;
@@ -79,32 +54,14 @@ async function authenticateToken(req, res, next) {
     return res.status(401).json({ error_msg: 'Unauthorized access. Token missing.' });
   }
 
-  if (isSupabaseConfigured) {
-    // Validate with Supabase Auth
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) {
-      // Fallback: Validate with Local JWT Secret for mock/bypass accounts like admin
-      jwt.verify(token, JWT_SECRET, (err, decodedUser) => {
-        if (err) {
-          return res.status(401).json({ error_msg: 'Invalid or expired session. Please login again.' });
-        }
-        req.user = decodedUser;
-        next();
-      });
-    } else {
-      req.user = user;
-      next();
+  // Validate with Local JWT Secret
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error_msg: 'Token verification failed. Please login again.' });
     }
-  } else {
-    // Validate with Local JWT Secret
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        return res.status(403).json({ error_msg: 'Token verification failed.' });
-      }
-      req.user = user;
-      next();
-    });
-  }
+    req.user = user;
+    next();
+  });
 }
 
 // Route: User Registration / Sign Up
@@ -115,28 +72,10 @@ app.post('/api/auth/signup', async (req, res) => {
     return res.status(400).json({ error_msg: 'Username and password are required' });
   }
 
-  // Determine email (Supabase requires emails for password auth)
+  // Local Fallback simulation
   const userEmail = email || `${username}@gmail.com`;
-
-  if (isSupabaseConfigured) {
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      email: userEmail,
-      password: password,
-      email_confirm: true,
-      user_metadata: {
-        username: username
-      }
-    });
-
-    if (error) {
-      return res.status(400).json({ error_msg: error.message });
-    }
-    return res.status(200).json({ message: 'User registered successfully', data });
-  } else {
-    // Local Fallback simulation
-    console.log(`[Mock Signup] User: ${username}, Email: ${userEmail} registered locally.`);
-    return res.status(200).json({ message: 'Mock registration successful!' });
-  }
+  console.log(`[Mock Signup] User: ${username}, Email: ${userEmail} registered locally.`);
+  return res.status(200).json({ message: 'Mock registration successful!' });
 });
 
 // Route: User Login
@@ -166,10 +105,11 @@ app.post('/api/auth/login', async (req, res) => {
     });
 
     if (ccbpResponse.ok) {
-      const ccbpData = await ccbpResponse.json();
       console.log(`✅ Login details verified with CCBP API for user: ${username}`);
+      // Issue a local token instead of CCBP's token so our middleware can verify it
+      const localToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '30d' });
       return res.status(200).json({
-        jwt_token: ccbpData.jwt_token,
+        jwt_token: localToken,
         message: 'Login successful'
       });
     }
@@ -177,39 +117,20 @@ app.post('/api/auth/login', async (req, res) => {
     console.error('⚠️ CCBP login API request failed, falling back:', error.message);
   }
 
-  // 2. Fallback to Supabase Auth if configured
-  if (isSupabaseConfigured) {
-    const userEmail = username.includes('@') ? username : `${username}@gmail.com`;
+  // 2. Local Fallback Login check
+  const validUsers = {
+    'rahul': 'rahul@2021',
+    'raja': 'raja@2021'
+  };
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: userEmail,
-      password: password
-    });
-
-    if (error) {
-      return res.status(401).json({ error_msg: error.message });
-    }
-
+  if (validUsers[username] && validUsers[username] === password) {
+    const mockToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '30d' });
     return res.status(200).json({
-      jwt_token: data.session.access_token,
-      message: 'Login successful'
+      jwt_token: mockToken,
+      message: 'Mock login successful'
     });
   } else {
-    // 3. Local Fallback Login check
-    const validUsers = {
-      'rahul': 'rahul@2021',
-      'raja': 'raja@2021'
-    };
-
-    if (validUsers[username] && validUsers[username] === password) {
-      const mockToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '30d' });
-      return res.status(200).json({
-        jwt_token: mockToken,
-        message: 'Mock login successful'
-      });
-    } else {
-      return res.status(400).json({ error_msg: 'Invalid credentials. Try rahul/rahul@2021.' });
-    }
+    return res.status(400).json({ error_msg: 'Invalid credentials. Try admin/admin123.' });
   }
 });
 
