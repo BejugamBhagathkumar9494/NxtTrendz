@@ -3,7 +3,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -82,10 +83,18 @@ async function authenticateToken(req, res, next) {
     // Validate with Supabase Auth
     const { data: { user }, error } = await supabase.auth.getUser(token);
     if (error || !user) {
-      return res.status(401).json({ error_msg: 'Invalid or expired session. Please login again.' });
+      // Fallback: Validate with Local JWT Secret for mock/bypass accounts like admin
+      jwt.verify(token, JWT_SECRET, (err, decodedUser) => {
+        if (err) {
+          return res.status(401).json({ error_msg: 'Invalid or expired session. Please login again.' });
+        }
+        req.user = decodedUser;
+        next();
+      });
+    } else {
+      req.user = user;
+      next();
     }
-    req.user = user;
-    next();
   } else {
     // Validate with Local JWT Secret
     jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -138,8 +147,38 @@ app.post('/api/auth/login', async (req, res) => {
     return res.status(400).json({ error_msg: 'Username and password are required' });
   }
 
+  // 0. Quick Admin bypass check
+  if (username === 'admin' && password === 'admin123') {
+    const mockToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '30d' });
+    console.log('🔑 Admin bypass login successful.');
+    return res.status(200).json({
+      jwt_token: mockToken,
+      message: 'Admin login successful'
+    });
+  }
+
+  // 1. Attempt to verify details with CCBP API request
+  try {
+    const ccbpResponse = await fetch('https://apis.ccbp.in/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (ccbpResponse.ok) {
+      const ccbpData = await ccbpResponse.json();
+      console.log(`✅ Login details verified with CCBP API for user: ${username}`);
+      return res.status(200).json({
+        jwt_token: ccbpData.jwt_token,
+        message: 'Login successful'
+      });
+    }
+  } catch (error) {
+    console.error('⚠️ CCBP login API request failed, falling back:', error.message);
+  }
+
+  // 2. Fallback to Supabase Auth if configured
   if (isSupabaseConfigured) {
-    // Supposing username is email, or it's formatted as username@gmail.com
     const userEmail = username.includes('@') ? username : `${username}@gmail.com`;
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -156,7 +195,7 @@ app.post('/api/auth/login', async (req, res) => {
       message: 'Login successful'
     });
   } else {
-    // Local Fallback Login check
+    // 3. Local Fallback Login check
     const validUsers = {
       'rahul': 'rahul@2021',
       'raja': 'raja@2021'
