@@ -1,6 +1,6 @@
 {
   "name": "nxttrenz-monorepo-root",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Root package.json to proxy build and start commands to the backend folder on Render",
   "scripts": {
     "postinstall": "npm install --prefix backend",

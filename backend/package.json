@@ -1,6 +1,6 @@
 {
   "name": "nxttrenz-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API for Nxt Trendz e-commerce app integrated with Supabase",
   "main": "server.js",
   "scripts": {
